@@ -1,44 +1,85 @@
-# portfolio-aqa-demo
+# SonarQube Demo — Unit Testing & CI Quality Gate
 
-Небольшой Java-проект для портфолио AQA:
-- Java 17
-- Gradle
-- JUnit 5
-- OWNER
-- JaCoCo
-- SonarQube
-- Jenkins Pipeline
+This project demonstrates a **unit testing setup in Java** with a strong focus on **code quality analysis using SonarQube** and **integration into a Jenkins pipeline**.
 
-## Что делает приложение
-Приложение рассчитывает итоговую стоимость заказа:
-- скидка для обычного клиента
-- скидка для VIP
-- налог
-- стоимость доставки
-- бесплатная доставка от порога
+---
 
-Все основные значения лежат в `application.properties` и читаются через OWNER.
+## 🎯 What This Project Demonstrates
 
-## Где OWNER используется в тестах
-В `src/test/resources/test.properties` лежат ожидаемые значения для тестов.
-Это полезно, когда хочется управлять тестовыми ожиданиями централизованно через конфигурацию.
+* Writing and running **unit tests (JUnit 5)**
+* Building and executing tests with **Gradle**
+* Generating **Allure reports** for test results
+* Running **static code analysis with SonarQube**
+* Enforcing **quality gates in CI (Jenkins)**
 
-## Запуск локально
+---
+
+## 🚀 Run Tests Locally
+
 ```bash
-./gradlew clean test jacocoTestReport
+chmod +x gradlew
+./gradlew clean test
 ```
 
-## Проверка покрытия
+---
+
+## 📊 Generate Allure Report
+
 ```bash
-./gradlew jacocoTestCoverageVerification
+brew install allure
+allure generate build/allure-results --clean -o build/allure-report
+allure open build/allure-report
 ```
 
-## SonarQube локально
+---
+
+## 🔎 SonarQube Analysis
+
+Run analysis locally (example):
+
 ```bash
-export SONAR_HOST_URL=http://localhost:9000
-export SONAR_TOKEN=your_token
-./gradlew sonarqube
+./gradlew sonarqube \
+  -Dsonar.projectKey=sonarqube-demo \
+  -Dsonar.host.url=http://localhost:9000 \
+  -Dsonar.login=<YOUR_TOKEN>
 ```
 
-## Jenkins pipeline
-В корне проекта уже есть `Jenkinsfile`.
+This step:
+
+* analyzes code quality
+* calculates coverage
+* detects bugs, vulnerabilities, code smells
+
+---
+
+## ⚙️ Jenkins Pipeline Integration (Concept)
+
+Typical pipeline steps:
+
+```text
+1. Checkout code
+2. Set up JDK 17
+3. Run: ./gradlew clean test
+4. Run: ./gradlew sonarqube
+5. Wait for Quality Gate
+6. Fail build if Quality Gate fails
+```
+
+This ensures:
+
+* tests must pass
+* code must meet quality standards
+
+---
+
+## 💡 Notes
+
+* Requires **Java 17**
+* On Windows use `gradlew.bat`
+* SonarQube must be running locally or remotely
+
+---
+
+## 👨‍💻 Author
+
+QA Automation Demo Project
