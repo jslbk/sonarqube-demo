@@ -35,8 +35,8 @@ test {
 tasks.withType(Test).configureEach {
     useJUnitPlatform()
     testLogging {
-        events 'PASSED', 'FAILED', 'SKIPPED'
-        exceptionFormat 'full'
+        events = ['PASSED', 'FAILED', 'SKIPPED']
+        exceptionFormat = 'full'
     }
     finalizedBy jacocoTestReport
 }
