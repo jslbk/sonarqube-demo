@@ -9,6 +9,7 @@ version = '1.0.0'
 
 def junitVersion = '5.10.2'
 def ownerVersion = '1.0.12'
+def allureVersion = '2.24.0'
 
 java {
     toolchain {
@@ -24,25 +25,30 @@ dependencies {
     implementation "org.aeonbits.owner:owner:${ownerVersion}"
 
     testImplementation platform("org.junit:junit-bom:${junitVersion}")
-    testImplementation "org.junit.jupiter:junit-jupiter"
-    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
-}
-
-test {
-    useJUnitPlatform()
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation "io.qameta.allure:allure-junit5:${allureVersion}"
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.withType(Test).configureEach {
     useJUnitPlatform()
+
+    systemProperty 'allure.results.directory', layout.buildDirectory.dir('allure-results').get().asFile.absolutePath
+
     testLogging {
         events = ['PASSED', 'FAILED', 'SKIPPED']
         exceptionFormat = 'full'
     }
-    finalizedBy jacocoTestReport
+
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+jacoco {
+    toolVersion = '0.8.13'
 }
 
 jacocoTestReport {
-    dependsOn test
+    dependsOn(tasks.test)
     reports {
         xml.required = true
         html.required = true
@@ -51,6 +57,7 @@ jacocoTestReport {
 }
 
 jacocoTestCoverageVerification {
+    dependsOn(tasks.test)
     violationRules {
         rule {
             limit {
@@ -60,16 +67,20 @@ jacocoTestCoverageVerification {
     }
 }
 
-check.dependsOn jacocoTestCoverageVerification
+tasks.check {
+    dependsOn(tasks.jacocoTestCoverageVerification)
+}
 
 sonar {
     properties {
         property 'sonar.projectKey', System.getenv('SONAR_PROJECT_KEY') ?: 'portfolio-aqa-demo'
         property 'sonar.projectName', 'portfolio-aqa-demo'
         property 'sonar.host.url', System.getenv('SONAR_HOST_URL') ?: 'http://sonarqube:9000'
+
         if (System.getenv('SONAR_TOKEN')) {
             property 'sonar.token', System.getenv('SONAR_TOKEN')
         }
+
         property 'sonar.coverage.jacoco.xmlReportPaths',
                 layout.buildDirectory.file('reports/jacoco/test/jacocoTestReport.xml').get().asFile.absolutePath
     }

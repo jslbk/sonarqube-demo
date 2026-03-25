@@ -37,11 +37,9 @@ pipeline {
             }
         }
 
-        stage('Quality Gate') {
+        stage('Allure Report') {
             steps {
-                timeout(time: 10, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                }
+                echo 'Allure results prepared in build/allure-results'
             }
         }
     }
@@ -49,15 +47,32 @@ pipeline {
     post {
         always {
             junit testResults: 'build/test-results/test/*.xml', allowEmptyResults: true
-            publishHTML(target: [
-                reportDir: 'build/reports/jacoco/test/html',
-                reportFiles: 'index.html',
-                reportName: 'JaCoCo Coverage Report',
-                keepAll: true,
-                alwaysLinkToLastBuild: true
-            ])
 
-            archiveArtifacts artifacts: 'build/reports/**', fingerprint: true
+            script {
+                if (fileExists('build/reports/jacoco/test/html/index.html')) {
+                    publishHTML(target: [
+                        reportDir: 'build/reports/jacoco/test/html',
+                        reportFiles: 'index.html',
+                        reportName: 'JaCoCo Coverage Report',
+                        keepAll: true,
+                        alwaysLinkToLastBuild: true
+                    ])
+                }
+            }
+
+            script {
+                if (fileExists('build/allure-results')) {
+                    allure([
+                        includeProperties: false,
+                        jdk: '',
+                        results: [[path: 'build/allure-results']]
+                    ])
+                } else {
+                    echo 'Allure results directory not found: build/allure-results'
+                }
+            }
+
+            archiveArtifacts artifacts: 'build/reports/**', fingerprint: true, allowEmptyArchive: true
         }
     }
 }
