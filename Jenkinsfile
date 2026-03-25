@@ -56,28 +56,24 @@ pipeline {
                         keepAll: true,
                         alwaysLinkToLastBuild: true
                     ])
-                } else {
-                    echo 'JaCoCo HTML report not found'
                 }
             }
 
             script {
-                if (fileExists('build/allure-results')) {
-                    def allureHome = tool 'Allure'
-                    env.PATH = "${allureHome}/bin:${env.PATH}"
+                sh 'echo "Allure files:"'
+                sh 'find build/allure-results -maxdepth 2 -type f || true'
 
+                if (fileExists('build/allure-results') && sh(script: "find build/allure-results -type f | wc -l", returnStdout: true).trim() != '0') {
                     allure([
-                        commandline: '2.38.1',
                         includeProperties: false,
                         jdk: '',
+                        reportBuildPolicy: 'ALWAYS',
                         results: [[path: 'build/allure-results']]
                     ])
                 } else {
-                    echo 'Skipping Allure report: build/allure-results not found'
+                    echo 'Allure results directory is missing or empty'
                 }
             }
-
-            archiveArtifacts artifacts: 'build/reports/**', fingerprint: true, allowEmptyArchive: true
         }
     }
 }
