@@ -3,7 +3,6 @@
 # ========================
 .gradle/
 build/
-!gradle/wrapper/gradle-wrapper.jar
 
 # ========================
 # Java
@@ -13,6 +12,9 @@ build/
 *.war
 *.ear
 *.log
+
+# keep Gradle wrapper jar tracked
+!gradle/wrapper/gradle-wrapper.jar
 
 # ========================
 # IntelliJ IDEA

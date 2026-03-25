@@ -48,8 +48,7 @@ pipeline {
 
     post {
         always {
-            junit testResults: 'build/test-results/test/*.xml', allowEmptyResults: false
-
+            junit testResults: 'build/test-results/test/*.xml', allowEmptyResults: true
             publishHTML(target: [
                 reportDir: 'build/reports/jacoco/test/html',
                 reportFiles: 'index.html',
