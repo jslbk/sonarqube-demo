@@ -25,7 +25,7 @@ pipeline {
             }
         }
 
-        stage('Run Unit Tests') {
+        stage('Run Tests & Coverage') {
             steps {
                 sh './gradlew clean test jacocoTestReport'
             }
@@ -37,9 +37,15 @@ pipeline {
             }
         }
 
-        stage('Allure Report') {
+        stage('Prepare Allure Report') {
             steps {
-                echo 'Allure results prepared in build/allure-results'
+                script {
+                    if (fileExists('build/allure-results')) {
+                        echo 'Allure results found'
+                    } else {
+                        echo 'Allure results directory not found: build/allure-results'
+                    }
+                }
             }
         }
     }
@@ -57,18 +63,23 @@ pipeline {
                         keepAll: true,
                         alwaysLinkToLastBuild: true
                     ])
+                } else {
+                    echo 'JaCoCo HTML report not found'
                 }
             }
 
             script {
                 if (fileExists('build/allure-results')) {
+                    def allureHome = tool 'allure'
+                    env.PATH = "${allureHome}/bin:${env.PATH}"
+
                     allure([
                         includeProperties: false,
                         jdk: '',
                         results: [[path: 'build/allure-results']]
                     ])
                 } else {
-                    echo 'Allure results directory not found: build/allure-results'
+                    echo 'Skipping Allure report: build/allure-results not found'
                 }
             }
 
