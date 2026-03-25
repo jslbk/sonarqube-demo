@@ -5,6 +5,12 @@ pipeline {
         timestamps()
     }
 
+    environment {
+        SONAR_PROJECT_KEY = 'portfolio-aqa-demo'
+        SONAR_HOST_URL = 'http://sonarqube:9000'
+        SONAR_TOKEN = credentials('sonar-token')
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -12,10 +18,30 @@ pipeline {
             }
         }
 
+        stage('Verify Java') {
+            steps {
+                sh 'java -version'
+                sh 'chmod +x gradlew'
+            }
+        }
+
         stage('Run Unit Tests') {
             steps {
-                sh 'chmod +x gradlew'
                 sh './gradlew clean test jacocoTestReport'
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                sh './gradlew sonarqube'
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 10, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
             }
         }
     }
@@ -23,6 +49,7 @@ pipeline {
     post {
         always {
             junit testResults: 'build/test-results/test/*.xml', allowEmptyResults: false
+
             publishHTML(target: [
                 reportDir: 'build/reports/jacoco/test/html',
                 reportFiles: 'index.html',
@@ -30,6 +57,7 @@ pipeline {
                 keepAll: true,
                 alwaysLinkToLastBuild: true
             ])
+
             archiveArtifacts artifacts: 'build/reports/**', fingerprint: true
         }
     }

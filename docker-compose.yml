@@ -1,6 +1,6 @@
 services:
   jenkins:
-    image: jenkins/jenkins:lts-jdk21
+    image: jenkins/jenkins:lts-jdk17
     container_name: portfolio-jenkins
     user: root
     ports:
