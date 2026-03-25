@@ -18,13 +18,6 @@ pipeline {
             }
         }
 
-        stage('Verify Java') {
-            steps {
-                sh 'java -version'
-                sh 'chmod +x gradlew'
-            }
-        }
-
         stage('Run Tests & Coverage') {
             steps {
                 sh './gradlew clean test jacocoTestReport'
@@ -74,6 +67,7 @@ pipeline {
                     env.PATH = "${allureHome}/bin:${env.PATH}"
 
                     allure([
+                        commandline: '2.38.1',
                         includeProperties: false,
                         jdk: '',
                         results: [[path: 'build/allure-results']]
