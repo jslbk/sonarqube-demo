@@ -5,11 +5,22 @@ pipeline {
         timestamps()
     }
 
+      options {
+            skipDefaultCheckout()
+        }
+
     environment {
         SONAR_PROJECT_KEY = 'portfolio-aqa-demo'
         SONAR_HOST_URL = 'http://sonarqube:9000'
         SONAR_TOKEN = credentials('sonar-token')
     }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
 
         stage('Run Tests & Coverage') {
             steps {
