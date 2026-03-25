@@ -70,7 +70,7 @@ pipeline {
 
             script {
                 if (fileExists('build/allure-results')) {
-                    def allureHome = tool 'allure'
+                    def allureHome = tool 'Allure'
                     env.PATH = "${allureHome}/bin:${env.PATH}"
 
                     allure([
