@@ -11,13 +11,6 @@ pipeline {
         SONAR_TOKEN = credentials('sonar-token')
     }
 
-    stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
         stage('Run Tests & Coverage') {
             steps {
                 sh './gradlew clean test jacocoTestReport'
