@@ -77,9 +77,3 @@ This ensures:
 * Requires **Java 17**
 * On Windows use `gradlew.bat`
 * SonarQube must be running locally or remotely
-
----
-
-## 👨‍💻 Author
-
-QA Automation Demo Project
