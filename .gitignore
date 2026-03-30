@@ -3,18 +3,13 @@
 # ========================
 .gradle/
 build/
+!gradle/wrapper/gradle-wrapper.jar
 
 # ========================
 # Java
 # ========================
 *.class
-*.jar
-*.war
-*.ear
 *.log
-
-# keep Gradle wrapper jar tracked
-!gradle/wrapper/gradle-wrapper.jar
 
 # ========================
 # IntelliJ IDEA
@@ -24,9 +19,15 @@ build/
 out/
 
 # ========================
-# OS (Mac)
+# VS Code
+# ========================
+.vscode/
+
+# ========================
+# OS
 # ========================
 .DS_Store
+Thumbs.db
 
 # ========================
 # Logs
@@ -40,15 +41,29 @@ logs/
 .env
 *.env
 .env.*
+*.properties.local
 
 # ========================
 # Test reports
 # ========================
 allure-results/
 allure-report/
+test-output/
+
+# ========================
+# Coverage / Reports
+# ========================
+coverage/
+jacoco.exec
 
 # ========================
 # Misc
 # ========================
 target/
 tmp/
+*.tmp
+
+# ========================
+# Docker
+# ========================
+docker-data/
