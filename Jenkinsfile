@@ -10,9 +10,6 @@ pipeline {
         SONAR_PROJECT_KEY = 'portfolio-aqa-demo'
         SONAR_HOST_URL = 'http://sonarqube:9000'
         SONAR_TOKEN = credentials('sonar-token')
-
-        // Manage Jenkins -> Tools -> Allure Commandline installations (naming should match)
-        ALLURE_COMMANDLINE = 'Allure'
     }
 
     stages {
@@ -31,12 +28,12 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                sh """
+                sh '''
                     ./gradlew sonar \
-                      -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
-                      -Dsonar.host.url=${SONAR_HOST_URL} \
-                      -Dsonar.token=${SONAR_TOKEN}
-                """
+                      -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+                      -Dsonar.host.url=$SONAR_HOST_URL \
+                      -Dsonar.token=$SONAR_TOKEN
+                '''
             }
         }
 
@@ -80,7 +77,7 @@ pipeline {
 
                 if (allureResultsExist) {
                     allureFilesCount = sh(
-                        script: "find build/allure-results -type f | wc -l",
+                        script: 'find build/allure-results -type f | wc -l',
                         returnStdout: true
                     ).trim()
                 }
@@ -91,7 +88,9 @@ pipeline {
                     allure([
                         includeProperties: false,
                         jdk: '',
-                        commandline: "${ALLURE_COMMANDLINE}",
+
+                         // Manage Jenkins -> Tools -> Allure Commandline installations (naming should match)
+                        commandline: 'Allure',
                         reportBuildPolicy: 'ALWAYS',
                         results: [[path: 'build/allure-results']]
                     ])
