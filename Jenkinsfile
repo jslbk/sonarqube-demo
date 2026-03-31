@@ -21,8 +21,10 @@ pipeline {
 
         stage('Run Tests & Coverage') {
             steps {
-                sh 'chmod +x gradlew'
-                sh './gradlew clean test jacocoTestReport'
+                ansiColor('xterm') {
+                    sh 'chmod +x gradlew'
+                    sh './gradlew clean test jacocoTestReport'
+                }
             }
         }
 
