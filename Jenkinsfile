@@ -43,7 +43,8 @@ pipeline {
             steps {
                 script {
                     if (fileExists('build/allure-results')) {
-                        sh 'allure generate build/allure-results --clean -o build/allure-report'
+                        def allureHome = tool 'Allure'
+                        sh "${allureHome}/bin/allure generate build/allure-results --clean -o build/allure-report"
                     } else {
                         echo 'Allure results directory not found: build/allure-results'
                     }
@@ -66,6 +67,8 @@ pipeline {
                         alwaysLinkToLastBuild: true,
                         allowMissing: true
                     ])
+                } else {
+                    echo 'JaCoCo HTML report not found'
                 }
             }
 
