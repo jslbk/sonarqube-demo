@@ -39,13 +39,11 @@ pipeline {
             }
         }
 
-        stage('Prepare Allure Report') {
+        stage('Generate Allure HTML Report') {
             steps {
                 script {
                     if (fileExists('build/allure-results')) {
-                        echo 'Allure results directory found'
-                        sh 'echo "Allure files:"'
-                        sh 'find build/allure-results -maxdepth 2 -type f || true'
+                        sh 'allure generate build/allure-results --clean -o build/allure-report'
                     } else {
                         echo 'Allure results directory not found: build/allure-results'
                     }
@@ -68,34 +66,21 @@ pipeline {
                         alwaysLinkToLastBuild: true,
                         allowMissing: true
                     ])
-                } else {
-                    echo 'JaCoCo HTML report not found'
                 }
             }
 
             script {
-                def allureResultsExist = fileExists('build/allure-results')
-                def allureFilesCount = '0'
-
-                if (allureResultsExist) {
-                    allureFilesCount = sh(
-                        script: 'find build/allure-results -type f | wc -l',
-                        returnStdout: true
-                    ).trim()
-                }
-
-                if (allureResultsExist && allureFilesCount != '0') {
-                    echo "Publishing Allure report from build/allure-results (${allureFilesCount} files)"
-
-                    allure([
-                        includeProperties: false,
-                        jdk: '',
-                        properties: [],
-                        reportBuildPolicy: 'ALWAYS',
-                        results: [[path: 'build/allure-results']]
+                if (fileExists('build/allure-report/index.html')) {
+                    publishHTML(target: [
+                        reportDir: 'build/allure-report',
+                        reportFiles: 'index.html',
+                        reportName: 'Allure Report',
+                        keepAll: true,
+                        alwaysLinkToLastBuild: true,
+                        allowMissing: true
                     ])
                 } else {
-                    echo 'Allure results directory is missing or empty'
+                    echo 'Allure HTML report not found'
                 }
             }
         }
