@@ -87,15 +87,13 @@ pipeline {
                 if (allureResultsExist && allureFilesCount != '0') {
                     echo "Publishing Allure report from build/allure-results (${allureFilesCount} files)"
 
-                    allure([
+                    allure(
+                        commandline: 'Allure', // Manage Jenkins -> Tools -> Allure Commandline installations (naming should match)
                         includeProperties: false,
                         jdk: '',
-
-                         // Manage Jenkins -> Tools -> Allure Commandline installations (naming should match)
-                        commandline: 'Allure',
                         reportBuildPolicy: 'ALWAYS',
                         results: [[path: 'build/allure-results']]
-                    ])
+                    )
                 } else {
                     echo 'Allure results directory is missing or empty'
                 }
