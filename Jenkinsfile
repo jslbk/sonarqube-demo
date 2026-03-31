@@ -3,12 +3,16 @@ pipeline {
 
     options {
         timestamps()
+        skipDefaultCheckout(true)
     }
 
     environment {
         SONAR_PROJECT_KEY = 'portfolio-aqa-demo'
         SONAR_HOST_URL = 'http://sonarqube:9000'
         SONAR_TOKEN = credentials('sonar-token')
+
+        // Manage Jenkins -> Tools -> Allure Commandline installations (naming should match)
+        ALLURE_COMMANDLINE = 'Allure'
     }
 
     stages {
@@ -20,13 +24,19 @@ pipeline {
 
         stage('Run Tests & Coverage') {
             steps {
+                sh 'chmod +x gradlew'
                 sh './gradlew clean test jacocoTestReport'
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
-                sh './gradlew sonar'
+                sh """
+                    ./gradlew sonar \
+                      -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+                      -Dsonar.host.url=${SONAR_HOST_URL} \
+                      -Dsonar.token=${SONAR_TOKEN}
+                """
             }
         }
 
@@ -34,7 +44,9 @@ pipeline {
             steps {
                 script {
                     if (fileExists('build/allure-results')) {
-                        echo 'Allure results found'
+                        echo 'Allure results directory found'
+                        sh 'echo "Allure files:"'
+                        sh 'find build/allure-results -maxdepth 2 -type f || true'
                     } else {
                         echo 'Allure results directory not found: build/allure-results'
                     }
@@ -54,19 +66,32 @@ pipeline {
                         reportFiles: 'index.html',
                         reportName: 'JaCoCo Coverage Report',
                         keepAll: true,
-                        alwaysLinkToLastBuild: true
+                        alwaysLinkToLastBuild: true,
+                        allowMissing: true
                     ])
+                } else {
+                    echo 'JaCoCo HTML report not found'
                 }
             }
 
             script {
-                sh 'echo "Allure files:"'
-                sh 'find build/allure-results -maxdepth 2 -type f || true'
+                def allureResultsExist = fileExists('build/allure-results')
+                def allureFilesCount = '0'
 
-                if (fileExists('build/allure-results') && sh(script: "find build/allure-results -type f | wc -l", returnStdout: true).trim() != '0') {
+                if (allureResultsExist) {
+                    allureFilesCount = sh(
+                        script: "find build/allure-results -type f | wc -l",
+                        returnStdout: true
+                    ).trim()
+                }
+
+                if (allureResultsExist && allureFilesCount != '0') {
+                    echo "Publishing Allure report from build/allure-results (${allureFilesCount} files)"
+
                     allure([
                         includeProperties: false,
                         jdk: '',
+                        commandline: "${ALLURE_COMMANDLINE}",
                         reportBuildPolicy: 'ALWAYS',
                         results: [[path: 'build/allure-results']]
                     ])
