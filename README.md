@@ -1,79 +1,118 @@
 # SonarQube Demo — Unit Testing & CI Quality Gate
+This project demonstrates a Java-based automation portfolio setup focused on **unit testing**, **code coverage**, **static code analysis**, and **CI quality control**.
 
-This project demonstrates a **unit testing setup in Java** with a strong focus on **code quality analysis using SonarQube** and **integration into a Jenkins pipeline**.
 
----
-
-## 🎯 What This Project Demonstrates
-
-* Writing and running **unit tests (JUnit 5)**
-* Building and executing tests with **Gradle**
-* Generating **Allure reports** for test results
-* Running **static code analysis with SonarQube**
-* Enforcing **quality gates in CI (Jenkins)**
+<p align="center">
+  <img src="media/project-banner.png" alt="Project Banner" width="900"/>
+</p>
 
 ---
 
-## 🚀 Run Tests Locally
+## Content
 
-```bash
-chmod +x gradlew
+- [Tools](#tools)
+- [What This Project Demonstrates](#what-this-project-demonstrates)
+- [Running Tests Locally](#running-tests-locally)
+- [Running with Docker](#running-with-docker)
+- [SonarQube Analysis](#sonarqube-analysis)
+- [Jenkins Pipeline](#jenkins-pipeline)
+- [Example Screenshots](#example-screenshots)
+
+---
+
+## Tools
+
+<p align="center">
+  <img src="media/icons/Java.svg" width="60"/>
+  <img src="media/icons/Gradle.svg" width="60"/>
+  <img src="media/icons/Junit5.svg" width="60"/>
+  <img src="media/icons/Sonarqube.svg" width="60"/>
+  <img src="media/icons/Jenkins.svg" width="60"/>
+  <img src="media/icons/Docker.svg" width="60"/>
+</p>
+
+---
+
+## What This Project Demonstrates
+
+- Writing unit tests with JUnit 5
+- Running builds with Gradle Wrapper
+- Measuring coverage with JaCoCo
+- Running SonarQube analysis
+- Using Docker Compose
+- CI pipeline with Jenkins
+- Quality Gate validation
+
+
+---
+
+## Running Tests Locally
+
+Run tests:
+
+```
 ./gradlew clean test
 ```
 
+> If you get `Permission denied` on macOS/Linux: chmod +x gradlew
+
 ---
 
-## 📊 Generate Allure Report
+## Running with Docker
 
-```bash
-brew install allure
-allure generate build/allure-results --clean -o build/allure-report
-allure open build/allure-report
+Start services:
+
+```
+docker compose up --build
+```
+
+or
+
+```
+docker-compose up --build
 ```
 
 ---
 
-## 🔎 SonarQube Analysis
+## SonarQube Analysis
 
-Run analysis locally (example):
-
-```bash
+```
 ./gradlew sonarqube \
   -Dsonar.projectKey=sonarqube-demo \
   -Dsonar.host.url=http://localhost:9000 \
   -Dsonar.login=<YOUR_TOKEN>
 ```
-
-This step:
-
-* analyzes code quality
-* calculates coverage
-* detects bugs, vulnerabilities, code smells
-
 ---
 
-## ⚙️ Jenkins Pipeline Integration (Concept)
+## Jenkins Pipeline
 
-Typical pipeline steps:
+Pipeline flow:
 
-```text
-1. Checkout code
-2. Set up JDK 17
-3. Run: ./gradlew clean test
-4. Run: ./gradlew sonarqube
-5. Wait for Quality Gate
-6. Fail build if Quality Gate fails
+1. Checkout
+2. Build
+3. Run tests
+4. SonarQube scan
+6. Quality Gate
+
+Command example:
 ```
-
-This ensures:
-
-* tests must pass
-* code must meet quality standards
-
+./gradlew clean test sonar
+```
 ---
 
-## 💡 Notes
+## Example Screenshots
 
-* Requires **Java 17**
-* On Windows use `gradlew.bat`
-* SonarQube must be running locally or remotely
+### SonarQube
+<p align="center">
+  <img src="media/sonarqube_analysis.png" width="850"/>
+</p>
+
+### Jenkins Stages
+<p align="center">
+  <img src="media/jenkins_pipeline_stages.png" width="850"/>
+</p>
+
+### Jenkins Pipeline Overview
+<p align="center">
+  <img src="media/jenkins_pipeline_overview.png" width="850"/>
+</p>
