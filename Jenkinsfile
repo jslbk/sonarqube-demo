@@ -39,18 +39,6 @@ pipeline {
             }
         }
 
-        stage('Generate Allure HTML Report') {
-            steps {
-                script {
-                    if (fileExists('build/allure-results')) {
-                        def allureHome = tool 'Allure'
-                        sh "${allureHome}/bin/allure generate build/allure-results --clean -o build/allure-report"
-                    } else {
-                        echo 'Allure results directory not found: build/allure-results'
-                    }
-                }
-            }
-        }
     }
 
     post {
@@ -69,21 +57,6 @@ pipeline {
                     ])
                 } else {
                     echo 'JaCoCo HTML report not found'
-                }
-            }
-
-            script {
-                if (fileExists('build/allure-report/index.html')) {
-                    publishHTML(target: [
-                        reportDir: 'build/allure-report',
-                        reportFiles: 'index.html',
-                        reportName: 'Allure Report',
-                        keepAll: true,
-                        alwaysLinkToLastBuild: true,
-                        allowMissing: true
-                    ])
-                } else {
-                    echo 'Allure HTML report not found'
                 }
             }
         }

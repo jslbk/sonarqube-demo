@@ -2,8 +2,6 @@ plugins {
     id 'java'
     id 'jacoco'
     id 'org.sonarqube' version '7.2.3.7755'
-    id 'io.qameta.allure-adapter' version '3.0.2'
-    id 'io.qameta.allure-report' version '3.0.2'
 }
 
 group = 'com.example'
@@ -11,7 +9,6 @@ version = '1.0.0'
 
 def junitVersion = '5.10.2'
 def ownerVersion = '1.0.12'
-def allureVersion = '2.24.0'
 
 java {
     toolchain {
@@ -28,14 +25,11 @@ dependencies {
 
     testImplementation platform("org.junit:junit-bom:${junitVersion}")
     testImplementation 'org.junit.jupiter:junit-jupiter'
-    testImplementation "io.qameta.allure:allure-junit5:${allureVersion}"
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.withType(Test).configureEach {
     useJUnitPlatform()
-
-    systemProperty 'allure.results.directory', layout.buildDirectory.dir('allure-results').get().asFile.absolutePath
 
     testLogging {
         events = ['PASSED', 'FAILED', 'SKIPPED']
@@ -85,19 +79,5 @@ sonar {
 
         property 'sonar.coverage.jacoco.xmlReportPaths',
                 layout.buildDirectory.file('reports/jacoco/test/jacocoTestReport.xml').get().asFile.absolutePath
-    }
-}
-
-allure {
-    adapter {
-        autoconfigure.set(true)
-        autoconfigureListeners.set(true)
-        aspectjWeaver.set(true)
-
-        frameworks {
-            junit5 {
-                enabled.set(true)
-            }
-        }
     }
 }
